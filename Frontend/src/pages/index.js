@@ -1,0 +1,15 @@
+export { default as Homepage } from "./User/Homepage/Homepage";
+export { default as ProductsPage } from "./User/Products/ProductsPage";
+export { default as ProductDetail } from "./User/ProductDetail/ProductDetail";
+export { default as Cart } from "./User/Cart/Cart";
+export { default as SearchPage } from "./User/Search/SearchPage";
+export { default as Profile } from "./User/Profile/Profile";
+export { default as Payment } from "./User/Payment/Payment";
+export { default as AdminOrders } from "./Admin/AdminOrders/AdminOrders";
+export { default as AdminHome } from "./Admin/AdminHome/AdminHome";
+export { default as AdminCategories } from "./Admin/AdminCategories/AdminCategories";
+export { default as AdminManagement } from "./Admin/AdminManagement/AdminManagement";
+export { default as AdminProductPage } from "./Admin/AdminProducts/ProductsPage";
+export { default as AdminProductCategory } from "./Admin/AdminProducts/ProductsCategory";
+export { default as AdminSearch } from "./Admin/AdminSearch/SearchPage";
+export { default as AdminTransaction } from "./Admin/AdminTransaction/AdminTransaction";
