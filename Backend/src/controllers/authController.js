@@ -3,13 +3,13 @@ const Account = require("../models/Account");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const axios = require("axios");
+const axiosInstance = require("axios");
 const https = require("https");
-const axiosInstance = axios.create({
-  httpsAgent: new https.Agent({
-    rejectUnauthorized: false, // Set this to false to ignore certificate errors
-  }),
-});
+// const axiosInstance = axios.create({
+//   httpsAgent: new https.Agent({
+//     rejectUnauthorized: false, // Set this to false to ignore certificate errors
+//   }),
+// });
 
 const authController = {
   //REGISTER
@@ -50,7 +50,7 @@ const authController = {
 
       const userId = newUser.id;
       const response = await axiosInstance.post(
-        "https://localhost:5000/api/payment/create-account",
+        "http://localhost:5000/api/payment/create-account",
         { userId }
       );
 

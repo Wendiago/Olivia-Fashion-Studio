@@ -23,7 +23,7 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
+      "http://localhost:5174",
       "https://localhost:3001",
       "https://oliviafashion.netlify.app",
     ],
@@ -36,14 +36,14 @@ app.use(
 
 app.use("/api/payment", paymentRoute);
 
-const server = https.createServer(
-  {
-    key: fs.readFileSync("./.cert/key.pem"),
-    cert: fs.readFileSync("./.cert/cert.pem"),
-  },
-  app
-);
+// const server = https.createServer(
+//   {
+//     key: fs.readFileSync("./.cert/key.pem"),
+//     cert: fs.readFileSync("./.cert/cert.pem"),
+//   },
+//   app
+// );
 
-server.listen(PORT, () => {
-  console.log(`App listening at https://localhost:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`App listening at http://localhost:${PORT}`);
 });
