@@ -32,7 +32,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
   cors({
-    origin: ["http://localhost:5174", "https://oliviafashion.netlify.app"],
+    origin: [
+      "https://olivia-fashion-studio-frontend.onrender.com/",
+      "http://localhost:5174",
+      "https://oliviafashion.netlify.app",
+    ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   })
