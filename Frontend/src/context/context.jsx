@@ -1,5 +1,5 @@
 import { useContext, createContext, useState, useEffect, useRef } from "react";
-import { Men, Women, Kid, Baby, Accessories } from "../assets/imgs";
+//import { Men, Women, Kid, Baby, Accessories } from "../assets/imgs";
 const UserContext = createContext();
 export const useUserContext = () => useContext(UserContext);
 export const UserContextProvider = ({ children }) => {
