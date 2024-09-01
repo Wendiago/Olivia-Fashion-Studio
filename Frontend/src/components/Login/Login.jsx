@@ -142,7 +142,7 @@ const Login = () => {
           className="OAuth px-[20px] py-[10px] flex items-center justify-center gap-x-2 
         border border-grey-400 cursor-pointer hover:bg-grey-100"
           onClick={() =>
-            window.open("https://localhost:8000/api/auth/google", "_self")
+            window.open("http://localhost:8000/api/auth/google", "_self")
           }
         >
           <Google className="h-[22px]" />

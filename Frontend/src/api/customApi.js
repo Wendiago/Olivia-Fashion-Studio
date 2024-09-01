@@ -1,6 +1,7 @@
 import axios from "axios";
 const customAxios = axios.create({
-  baseURL: "https://localhost:8000/api",
+  //baseURL: "http://localhost:8000/api",
+  baseURL: "https://olivia-fashion-studio.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
