@@ -1,3 +1,9 @@
 #root{
     min-height: 100vh;
 }
+
+/* Remove default eye from password input in MS */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}

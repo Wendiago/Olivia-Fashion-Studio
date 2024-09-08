@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import { useAuth } from "../../../context/AuthContext";
 import { formatPrice } from "../../../utils/helpers";
 import { NumberInput } from "../../../components";
 import {
@@ -14,8 +15,6 @@ import {
   totalQuantity,
 } from "../../../store/CartSlice/CartSlice";
 import { useSelector, useDispatch } from "react-redux";
-import customAxios from "../../../api/customApi";
-
 const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,9 +23,13 @@ const Cart = () => {
   const total_quantity = useSelector(totalQuantity);
   const items_count = useSelector(itemsCount);
 
+  const { user } = useAuth();
+
   useEffect(() => {
-    dispatch(fetchCart());
-  }, []);
+    if (user) {
+      dispatch(fetchCart());
+    }
+  }, [user, dispatch]);
 
   const handleRemoveCartItem = (id) => {
     dispatch(removeItemFromCart(id));

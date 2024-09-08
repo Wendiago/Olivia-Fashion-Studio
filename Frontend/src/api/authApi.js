@@ -3,38 +3,26 @@ import { toast } from "react-toastify";
 
 class AuthApi {
   async register(data) {
-    try {
-      const response = await customAxios.post(`/auth/register`, data);
-      return response;
-    } catch (error) {
-      return error.response;
-    }
+    const response = await customAxios.post(`/auth/register`, data);
+    return response;
   }
   async login(data) {
-    try {
-      const response = await customAxios.post(`/auth/login`, data);
-      return response;
-    } catch (error) {
-      return error.response;
-    }
+    const response = await customAxios.post(`/auth/login`, data);
+    return response;
   }
   async logout() {
-    try {
-      const response = await customAxios.post(`/auth/logout`, {});
-      return response;
-    } catch (error) {
-      return error.response;
-    }
+    const response = await customAxios.post(`/auth/logout`, {});
+    return response;
   }
 
   async update(userId, data) {
-    try {
-      const response = await customAxios.post(`/auth/update/${userId}`, data);
-      return response;
-    } catch (error) {
-      toast.error("Fail to update information");
-      return error.response;
-    }
+    const response = await customAxios.post(`/auth/update/${userId}`, data);
+    return response;
+  }
+
+  async getInfo() {
+    const response = await customAxios.get(`/auth/info`);
+    return response;
   }
 }
 

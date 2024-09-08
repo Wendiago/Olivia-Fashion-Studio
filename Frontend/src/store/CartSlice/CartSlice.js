@@ -13,7 +13,15 @@ const initialState = {
 const cartSlice = createSlice({
   name: "cart",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    // Reset cart action to clear the cart state
+    resetCart: (state) => {
+      state.itemsCount = 0;
+      state.totalQuantity = 0;
+      state.carts = [];
+      state.totalPrice = 0;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchCart.fulfilled, (state, action) => {
       console.log(action.payload.data);
@@ -128,5 +136,6 @@ export const itemsCount = (state) => state.cart.itemsCount;
 export const carts = (state) => state.cart.carts;
 export const totalQuantity = (state) => state.cart.totalQuantity;
 export const totalPrice = (state) => state.cart.totalPrice;
+export const { resetCart } = cartSlice.actions;
 
 export default cartSlice.reducer;

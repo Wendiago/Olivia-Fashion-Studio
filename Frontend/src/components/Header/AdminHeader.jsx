@@ -7,7 +7,7 @@ import {
   Category,
   ProductManagement,
   Order,
-  Transaction
+  Transaction,
 } from "../../assets/icons";
 import { useAuth } from "../../context/AuthContext";
 import AuthApi from "../../api/authApi";
@@ -91,7 +91,7 @@ const Header = () => {
                 Transaction
               </p>
             </NavLink>
-            {user.isAuthenticated && (
+            {user && (
               <NavLink
                 className="group mr-[18px] flex flex-col items-center justify-center gap-1"
                 onClick={handleLogOut}

@@ -1,8 +1,9 @@
 import { useAuth } from "../../../context/AuthContext";
 import { DefaultAvatar } from "../../../assets/imgs";
 import { NavLink } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import "./Profile.css";
-const Profile = ({ children }) => {
+const Profile = () => {
   const { user } = useAuth();
   //console.log(user);
   return (
@@ -33,7 +34,7 @@ const Profile = ({ children }) => {
             </NavLink>
           </div>
           <main className="bg-white px-[20px] border border-grey-300 shadow-sm rounded-md">
-            {children}
+            <Outlet></Outlet>
           </main>
         </div>
       </div>

@@ -1,9 +1,12 @@
 import { AdminHeader, Footer } from "../../components";
-const Container = ({ children }) => {
+import { Outlet } from "react-router-dom";
+const Container = () => {
   return (
     <div className="divide-y flex flex-col min-h-screen">
       <AdminHeader />
-      <div className="flex-1 bg-grey-100">{children}</div>
+      <div className="flex-1 bg-grey-100">
+        <Outlet></Outlet>
+      </div>
       <Footer />
     </div>
   );
