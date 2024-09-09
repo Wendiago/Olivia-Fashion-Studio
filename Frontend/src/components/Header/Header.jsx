@@ -11,6 +11,11 @@ import {
   fetchCart,
   resetCart,
 } from "../../store/CartSlice/CartSlice";
+import {
+  itemsCount,
+  fetchCart,
+  resetCart,
+} from "../../store/CartSlice/CartSlice";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -26,11 +31,19 @@ const Header = () => {
       dispatch(resetCart());
     }
   }, [user]);
+    if (user) {
+      dispatch(fetchCart());
+    } else {
+      dispatch(resetCart());
+    }
+  }, [user]);
   const handleSearchKeyWord = (e) => {
     e.preventDefault();
     setKeyWord(e.target.value);
   };
   const handleLogOut = async () => {
+    try {
+      await logout();
     try {
       await logout();
       toast.success("Log out successful");
@@ -41,6 +54,7 @@ const Header = () => {
   };
   const handleOnCartClick = (e) => {
     e.preventDefault();
+    if (!user) {
     if (!user) {
       toast.error("Please login first");
     } else {
@@ -107,6 +121,7 @@ const Header = () => {
             </p>
           </NavLink>
           {user && (
+          {user && (
             <NavLink
               className="group mr-[30px] flex flex-col items-center justify-center gap-1"
               to="/profile"
@@ -118,6 +133,7 @@ const Header = () => {
             </NavLink>
           )}
 
+          {!user && (
           {!user && (
             <>
               <NavLink
@@ -139,6 +155,7 @@ const Header = () => {
               </NavLink>
             </>
           )}
+          {user && (
           {user && (
             <NavLink
               className="group mr-[18px] flex flex-col items-center justify-center gap-1"
