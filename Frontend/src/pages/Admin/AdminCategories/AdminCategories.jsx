@@ -33,17 +33,14 @@ import { Loading } from "../../../components";
 import { Delete, Edit } from "../../../assets/icons";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAllCategories } from "../../../hooks/useAllCategories";
 
 const AdminCategories = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const categoryList = useSelector(getAllCategory);
-  const categoryListStatus = useSelector(getAllCategoryStatus);
-
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-
   const [categoryIdToDelete, setCategoryIdToDelete] = useState(null);
   const [categoryToEdit, setCategoryToEdit] = useState(null);
   const [newCategory, setNewCategory] = useState({
@@ -51,11 +48,14 @@ const AdminCategories = () => {
     banner: "",
   });
 
-  useEffect(() => {
-    dispatch(fetchAsyncCategories());
-  }, []);
+  const {
+    data: categoryList = {},
+    isLoading: isCategoriesLoading,
+    error: categoriesError,
+  } = useAllCategories();
+  const { data: categories = [] } = categoryList;
 
-  if (categoryListStatus === STATUS.LOADING) {
+  if (isCategoriesLoading) {
     return <Loading />;
   }
 
@@ -237,7 +237,7 @@ const AdminCategories = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {categoryList.map((category, index) => (
+              {categories.map((category, index) => (
                 <TableRow key={index}>
                   <TableCell>{category._id.slice(-6)}</TableCell>
                   <TableCell>

@@ -1,45 +1,33 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import ProductApi from "../../../api/productApi";
-import {
-  getAllCategory,
-  getAllCategoryStatus,
-  fetchAsyncCategories,
-} from "../../../store/CategorySlice/CategorySlice";
-import { STATUS } from "../../../utils/status";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Carousel from "react-material-ui-carousel";
 import MultiCarousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { Bolt } from "@mui/icons-material";
 import { ProductCard, Loading } from "../../../components";
+import { useAllCategories } from "../../../hooks/useAllCategories";
+import { useAllProducts } from "../../../hooks/useAllProducts";
+import { placeholder } from "../../../assets/imgs";
 
 const Homepage = () => {
-  const dispatch = useDispatch();
-  const categoryList = useSelector(getAllCategory);
-  const categoryListStatus = useSelector(getAllCategoryStatus);
   const [activeItemIndex, setActiveItemIndex] = useState(0);
-  const [products, setProducts] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await ProductApi.getAllProduct(1, 15);
-        setProducts(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    dispatch(fetchAsyncCategories());
-    fetchData();
-  }, []);
+  const {
+    data: categoryList = {},
+    isLoading: isCategoriesLoading,
+    error: categoriesError,
+  } = useAllCategories();
+  const {
+    data: productList = {},
+    isLoading: isProductsLoading,
+    error: productsError,
+  } = useAllProducts(1, 15);
 
-  if (categoryListStatus == STATUS.LOADING) {
-    return <Loading />;
-  }
+  const { data: categories = [] } = categoryList;
+  const { data: products = [] } = productList;
 
-  const handleCategoryButtonClick = (category, index) => {
+  const handleCategoryButtonClick = (category) => {
     // Update the active item index based on the clicked category
     navigate(`/product/category/${category?._id}`);
   };
@@ -62,16 +50,16 @@ const Homepage = () => {
     },
   };
 
-  return products ? (
+  return (
     <div className="flex flex-col bg-grey-100 items-center gap-y-[30px] pb-[50px]">
-      <div className="max-h-[520px] max-w-[1200px] w-[1200px] bg-white mt-[20px] border border-grey-300 rounded-lg shadow-sm flex gap-2">
+      <div className="h-[520px] max-w-[1200px] w-[1200px] bg-white mt-[20px] border border-grey-300 rounded-lg shadow-sm flex gap-2">
         <ul className="categoryBar p-[14px]">
-          {categoryList.map((category, index) => (
+          {categories.map((category, index) => (
             <li
               key={index}
               className="pt-3 pb-3 pl-3 pr-20 font-body text-grey-600 cursor-pointer
               hover:bg-secondary hover:text-dark hover:border-0 hover:rounded-md "
-              onClick={() => handleCategoryButtonClick(category, index)}
+              onClick={() => handleCategoryButtonClick(category)}
             >
               {category?.category}
             </li>
@@ -84,17 +72,24 @@ const Homepage = () => {
             interval={5000}
             index={activeItemIndex}
             onChange={(index) => setActiveItemIndex(index)}
+            className="w-full h-full"
           >
-            {categoryList.map((category, index) => (
-              <img
-                className="cursor-pointer"
-                src={category.banner}
-                key={index}
-                onClick={() => {
-                  navigate(`/product/category/${category._id}`);
-                }}
-              ></img>
-            ))}
+            {isCategoriesLoading ? (
+              <img className="cursor-pointer " src={placeholder}></img>
+            ) : (
+              categories.map((category, index) => (
+                <img
+                  className="cursor-pointer"
+                  loading="lazy"
+                  src={category.banner}
+                  key={index}
+                  onClick={() => {
+                    navigate(`/product/category/${category._id}`);
+                  }}
+                ></img>
+              ))
+            )}
+            {}
           </Carousel>
         </div>
       </div>
@@ -123,8 +118,6 @@ const Homepage = () => {
         </MultiCarousel>
       </div>
     </div>
-  ) : (
-    <Loading />
   );
 };
 

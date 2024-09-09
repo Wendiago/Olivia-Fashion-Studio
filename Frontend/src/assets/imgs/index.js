@@ -1,2 +1,3 @@
 import DefaultAvatar from "./DefaultAva.png";
-export { DefaultAvatar };
+import placeholder from "./placeholder.jpeg";
+export { DefaultAvatar, placeholder };

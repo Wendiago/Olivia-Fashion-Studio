@@ -19,8 +19,6 @@ const Header = () => {
   //console.log(cartItemCount);
   const { user, logout } = useAuth();
   const [keyword, setKeyWord] = useState("");
-
-  console.log(user);
   useEffect(() => {
     if (user) {
       dispatch(fetchCart());
@@ -36,7 +34,7 @@ const Header = () => {
     try {
       await logout();
       toast.success("Log out successful");
-      navigate("/login");
+      navigate("/");
     } catch {
       toast.error(response.data.message);
     }
@@ -46,7 +44,7 @@ const Header = () => {
     if (!user) {
       toast.error("Please login first");
     } else {
-      console.log(user._id);
+      //console.log(user._id);
       navigate(`/cart`);
     }
   };

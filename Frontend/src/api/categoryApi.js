@@ -1,50 +1,35 @@
 import customAxios from "./customApi";
 
-class ProductApi {
+class CategoryApi {
   async getAllCategories() {
-    try {
-      const response = await customAxios.get(`/category/`);
-      return response.data;
-    } catch (error) {
-      return error.response;
-    }
+    const response = await customAxios.get(`/category/`);
+    return response.data;
   }
 
   async getCategoryById(categoryId) {
-    try {
-      const response = await customAxios.get(`/category/${categoryId}`);
-      return response.data;
-    } catch (error) {
-      return error.response;
-    }
+    const response = await customAxios.get(`/category/${categoryId}`);
+    return response.data;
   }
 
   async addCategory(data) {
-    try {
-        const response = await customAxios.post(`admin/category/add`, data);
-        return response.data;
-    } catch (error) {
-        return error.response;
-    }
+    const response = await customAxios.post(`admin/category/add`, data);
+    return response.data;
   }
 
   async updateCategory(categoryId, data) {
-    try {
-        const response = await customAxios.post(`admin/category/update/${categoryId}`, data);
-        return response.data;
-    } catch (error) {
-        return error.response;
-    }
+    const response = await customAxios.post(
+      `admin/category/update/${categoryId}`,
+      data
+    );
+    return response.data;
   }
 
   async deleteCategory(categoryId) {
-    try {
-        const response = await customAxios.get(`admin/category/delete/${categoryId}`);
-        return response.data;
-    } catch (error) {
-        return error.response;
-    }
+    const response = await customAxios.get(
+      `admin/category/delete/${categoryId}`
+    );
+    return response.data;
   }
 }
 
-export default new ProductApi();
+export default new CategoryApi();

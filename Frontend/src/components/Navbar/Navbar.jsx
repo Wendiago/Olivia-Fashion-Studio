@@ -1,28 +1,17 @@
 import { Menu } from "../../assets/icons";
 import { useUserContext } from "../../context/context";
 import { NavLink } from "react-router-dom";
-import {
-  getAllCategory,
-  getAllCategoryStatus,
-  fetchAsyncCategories,
-} from "../../store/CategorySlice/CategorySlice";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { Loading } from "../../components";
-import { STATUS } from "../../utils/status";
+import { useAllCategories } from "../../hooks/useAllCategories";
+
 const Navbar = () => {
   const { isCategoryOpen, setCategoryOpen, categoryDropdownRef } =
     useUserContext();
-  const dispatch = useDispatch();
-  const categoryList = useSelector(getAllCategory);
-  const categoryStatus = useSelector(getAllCategoryStatus);
-  useEffect(() => {
-    dispatch(fetchAsyncCategories());
-  }, []);
-
-  if (categoryStatus === STATUS.LOADING) {
-    return <Loading />;
-  }
+  const {
+    data: categoryList = {},
+    isLoading: isCategoriesLoading,
+    error: categoriesError,
+  } = useAllCategories();
+  const { data: categories = [] } = categoryList;
   return (
     <div className="h-[56px] flex">
       <div
@@ -43,7 +32,7 @@ const Navbar = () => {
           {isCategoryOpen && (
             <div className="absolute w-[200px] top-[45px] left-7 bg-grey-300 border rounded-b-lg">
               <div className="flex flex-col">
-                {categoryList.map((category, index) => {
+                {categories.map((category, index) => {
                   return (
                     <NavLink
                       to={`/product/category/${category?._id}`}
