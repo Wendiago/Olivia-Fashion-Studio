@@ -95,7 +95,7 @@ const ProductDetail = () => {
   //console.log(quantity);
 
   const handleAddToCart = () => {
-    if (user.isAuthenticated) {
+    if (user) {
       if (product?.quantity > 0) {
         console.log(quantity);
         dispatch(addToCart({ productId: product._id, quantity: quantity }));

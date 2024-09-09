@@ -5,18 +5,21 @@ import AuthApi from "../../api/authApi";
 import { toast } from "react-toastify";
 
 const ProfilePage = () => {
-  const { user, update } = useAuth();
-  console.log(user);
+  const { update, user } = useAuth();
   const [fullname, setFullname] = useState(user?.fullname || user?.username);
   const handleUpdateUserInfo = async () => {
     if (user && fullname !== null && fullname !== "") {
-      const response = await AuthApi.update(user._id, {
-        fullname: fullname,
-      });
-      if (response.status === 200) {
-        toast.success("Update successfully");
-        update(response.data.data);
-      }
+      update(
+        { fullname: fullname },
+        {
+          onSucess: () => {
+            toast.success("Update successfully");
+          },
+          onError: () => {
+            toast.error("Update failed");
+          },
+        }
+      );
     }
   };
   return (

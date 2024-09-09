@@ -15,11 +15,18 @@ router.post("/login", authController.loginUser);
 //LOG OUT
 router.post("/logout", middlewareController.verifyToken, authController.logOut);
 
-//LOG OUT
+//UPDATE PROFILE
 router.post(
   "/update/:id",
   middlewareController.verifyToken,
   authController.updateUser
+);
+
+//GET INFO
+router.get(
+  "/info",
+  middlewareController.verifyToken,
+  authController.getUserInfo
 );
 
 //

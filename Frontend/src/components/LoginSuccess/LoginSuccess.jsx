@@ -15,7 +15,7 @@ const LoginSuccess = () => {
     };
     const fetchToken = async () => {
       let response = await axios.post(
-        "https://localhost:8000/api/auth/login-success",
+        "http://localhost:8000/api/auth/login-success",
         user,
         { withCredentials: true }
       );

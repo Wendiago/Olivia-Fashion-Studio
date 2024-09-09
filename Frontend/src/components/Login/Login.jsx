@@ -4,7 +4,6 @@ import { Google } from "../../assets/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../context/AuthContext";
-import AuthApi from "../../api/authApi";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 
@@ -36,32 +35,40 @@ const Login = () => {
     setValidPwd(PWD_REGEX.test(pwd));
   }, [pwd]);
 
+  // Effect to redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      if (user.isAdmin) {
+        navigate("/admin/");
+      } else {
+        navigate(`/`);
+      }
+    }
+  }, [user, navigate]);
+
   const handleSubmit = async () => {
     if (!validName || !validPwd) {
       setErrMsg("Invalid input. Try again");
-    } else if (user.isAuthenticated) {
-      toast.error("Please log out first");
-      setErrMsg("Please log out first");
     } else {
       setErrMsg("");
-      const dataToSend = {
-        username: username,
-        password: pwd,
-      };
 
-      const response = await AuthApi.login(dataToSend);
-      if (response?.status === 200) {
-        toast.success("Login successful");
-        login(response.data.data, response.data.data.accessToken);
-        if (response.data.data.isAdmin) {
-          navigate("/admin/");
-        } else {
-          navigate(`/`);
+      login(
+        { username, password: pwd },
+        {
+          onSuccess: (data) => {
+            toast.success("Login successful");
+            if (data.isAdmin) {
+              navigate("/admin/");
+            } else {
+              navigate(`/`);
+            }
+          },
+          onError: (error) => {
+            toast.error(error?.response?.data?.message || "Login failed");
+            setErrMsg(error?.response?.data?.message || "Login failed");
+          },
         }
-      } else {
-        toast.error(response?.data?.message);
-        setErrMsg(`${response?.data?.message}`);
-      }
+      );
     }
   };
 
@@ -105,7 +112,7 @@ const Login = () => {
           <div className="password-input-container border border-grey-400 rounded-md flex focus-within:border-primary focus-within:border-2">
             <input
               type={tooglePassword ? "text" : "password"}
-              className="px-[12px] py-[6px] flex-1 outline-none border-0 rounded-s-md"
+              className="px-[12px] py-[6px] flex-1 outline-none border-0 rounded-s-md "
               name="password"
               id="password"
               onFocus={() => setPwdFocus(true)}
@@ -117,11 +124,10 @@ const Login = () => {
               className="flex items-center justify-center cursor-pointer"
               onClick={() => setTooglePassword(!tooglePassword)}
             >
-              {!tooglePassword ? (
-                <FontAwesomeIcon icon={faEyeSlash} className="px-[8px]" />
-              ) : (
-                <FontAwesomeIcon icon={faEye} className="px-[8px]" />
-              )}
+              <FontAwesomeIcon
+                icon={tooglePassword ? faEye : faEyeSlash}
+                className="px-[8px]"
+              />
             </div>
           </div>
           {pwdFocus && pwd && !validPwd && (
@@ -142,7 +148,7 @@ const Login = () => {
           className="OAuth px-[20px] py-[10px] flex items-center justify-center gap-x-2 
         border border-grey-400 cursor-pointer hover:bg-grey-100"
           onClick={() =>
-            window.open("https://localhost:8000/api/auth/google", "_self")
+            window.open("http://localhost:8000/api/auth/google", "_self")
           }
         >
           <Google className="h-[22px]" />

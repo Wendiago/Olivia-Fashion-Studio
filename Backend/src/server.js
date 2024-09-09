@@ -4,8 +4,6 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 dotenv.config();
-const https = require("https");
-const fs = require("fs");
 
 const productRoute = require("./routes/product");
 const categoryRoute = require("./routes/category");
@@ -21,6 +19,7 @@ const analysisAdminRoute = require("./routes/Admin/analysis.js");
 require("./passport.js");
 
 const conecctToDB = require("./configs/db");
+const { appendFile } = require("fs/promises");
 
 const PORT = process.env.PORT || 3000;
 
@@ -34,8 +33,8 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
-      "https://localhost:3001",
+      "https://olivia-fashion-studio-frontend.onrender.com",
+      "http://localhost:5174",
       "https://oliviafashion.netlify.app",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -57,14 +56,14 @@ app.use("/api/admin/user", userAdminRoute);
 app.use("/api/admin/category", categoryAdminRoute);
 app.use("/api/admin/analysis", analysisAdminRoute);
 
-const server = https.createServer(
-  {
-    key: fs.readFileSync("./.cert/key.pem"),
-    cert: fs.readFileSync("./.cert/cert.pem"),
-  },
-  app
-);
+// const server = https.createServer(
+//   {
+//     key: fs.readFileSync("./.cert/key.pem"),
+//     cert: fs.readFileSync("./.cert/cert.pem"),
+//   },
+//   app
+// );
 
-server.listen(PORT, () => {
-  console.log(`App listening at https://localhost:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`App listening at http://localhost:${PORT}`);
 });

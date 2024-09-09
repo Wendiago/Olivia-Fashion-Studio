@@ -15,7 +15,7 @@ import {
   AdminProductPage,
   AdminProductCategory,
   AdminSearch,
-  AdminTransaction
+  AdminTransaction,
 } from "./pages";
 import { UserContextProvider } from "./context/context";
 import { AuthProvider } from "./context/AuthContext";
@@ -44,158 +44,43 @@ function App() {
               <Route path="/login-success/:userId" element={<LoginSuccess />} />
               <Route path="/login" element={<Form type="login" />} />
               <Route path="/register" element={<Form type="register" />} />
-              <Route
-                path="/"
-                element={
-                  <Container>
-                    <Homepage />
-                  </Container>
-                }
-              />
-              <Route
-                path="/search"
-                element={
-                  <Container>
-                    <SearchPage />
-                  </Container>
-                }
-              />
-              <Route
-                path="/product/category/:categoryId"
-                element={
-                  <Container>
-                    <ProductsPage />
-                  </Container>
-                }
-              />
-              <Route
-                path="/product/:id"
-                element={
-                  <Container>
-                    <ProductDetail />
-                  </Container>
-                }
-              />
-              <Route
-                path="/cart"
-                element={
-                  <Container>
-                    <Cart />
-                  </Container>
-                }
-              />
-              <Route
-                path="/payment"
-                element={
-                  <Container>
-                    <Payment />
-                  </Container>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <Container>
-                    <Profile>
-                      <ProfilePage />
-                    </Profile>
-                  </Container>
-                }
-              />
-              <Route
-                path="/order"
-                element={
-                  <Container>
-                    <Profile>
-                      <OrderInfo />
-                    </Profile>
-                  </Container>
-                }
-              />
-              <Route
-                path="/transactions"
-                element={
-                  <Container>
-                    <Profile>
-                      <TransactionHistory />
-                    </Profile>
-                  </Container>
-                }
-              />
-              <Route
-                path="/topup"
-                element={
-                  <Container>
-                    <Profile>
-                      <Topup />
-                    </Profile>
-                  </Container>
-                }
-              />
-              <Route
-                path="/admin/"
-                element={
-                  <AdminContainer>
-                    <AdminHome />
-                  </AdminContainer>
-                }
-              />
-              <Route
-                path="/admin/orders"
-                element={
-                  <AdminContainer>
-                    <AdminOrders />
-                  </AdminContainer>
-                }
-              />
-              <Route
-                path="/admin/categories"
-                element={
-                  <AdminContainer>
-                    <AdminCategories />
-                  </AdminContainer>
-                }
-              />
-              <Route
-                path="/admin/products"
-                element={
-                  <AdminContainer>
-                    <AdminProductPage />
-                  </AdminContainer>
-                }
-              />
-              <Route
-                path="/admin/users"
-                element={
-                  <AdminContainer>
-                    <AdminManagement />
-                  </AdminContainer>
-                }
-              />
-              <Route
-                path="admin/category/:categoryId"
-                element={
-                  <AdminContainer>
-                    <AdminProductCategory />
-                  </AdminContainer>
-                }
-              />
-              <Route
-                path="/admin/search"
-                element={
-                  <AdminContainer>
-                    <AdminSearch />
-                  </AdminContainer>
-                }
-              />
-              <Route
-                path="/admin/transaction"
-                element={
-                  <AdminContainer>
-                    <AdminTransaction />
-                  </AdminContainer>
-                }
-              />
+              <Route element={<Container></Container>}>
+                <Route path="/" element={<Homepage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route
+                  path="/product/category/:categoryId"
+                  element={<ProductsPage />}
+                />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/payment" element={<Payment />} />
+                <Route element={<Profile></Profile>}>
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/order" element={<OrderInfo />} />
+                  <Route
+                    path="/transactions"
+                    element={<TransactionHistory />}
+                  />
+                  <Route path="/topup" element={<Topup />} />
+                </Route>
+              </Route>
+
+              <Route element={<AdminContainer></AdminContainer>}>
+                <Route path="/admin/" element={<AdminHome />} />
+                <Route path="/admin/orders" element={<AdminOrders />} />
+                <Route path="/admin/categories" element={<AdminCategories />} />
+                <Route path="/admin/products" element={<AdminProductPage />} />
+                <Route path="/admin/users" element={<AdminManagement />} />
+                <Route
+                  path="admin/category/:categoryId"
+                  element={<AdminProductCategory />}
+                />
+                <Route path="/admin/search" element={<AdminSearch />} />
+                <Route
+                  path="/admin/transaction"
+                  element={<AdminTransaction />}
+                />
+              </Route>
             </Routes>
             <div>
               <ToastContainer

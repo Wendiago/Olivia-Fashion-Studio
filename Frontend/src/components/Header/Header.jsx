@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Cart, Logo, Profile } from "../../assets/icons";
 import { useAuth } from "../../context/AuthContext";
-import AuthApi from "../../api/authApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { itemsCount, fetchCart } from "../../store/CartSlice/CartSlice";
+import {
+  itemsCount,
+  fetchCart,
+  resetCart,
+} from "../../store/CartSlice/CartSlice";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -17,27 +20,30 @@ const Header = () => {
   const { user, logout } = useAuth();
   const [keyword, setKeyWord] = useState("");
 
+  console.log(user);
   useEffect(() => {
-    dispatch(fetchCart());
-  }, []);
+    if (user) {
+      dispatch(fetchCart());
+    } else {
+      dispatch(resetCart());
+    }
+  }, [user]);
   const handleSearchKeyWord = (e) => {
     e.preventDefault();
     setKeyWord(e.target.value);
   };
   const handleLogOut = async () => {
-    const response = await AuthApi.logout();
-    console.log(response);
-    if (response?.status === 200) {
+    try {
+      await logout();
       toast.success("Log out successful");
-      logout();
       navigate("/login");
-    } else {
+    } catch {
       toast.error(response.data.message);
     }
   };
   const handleOnCartClick = (e) => {
     e.preventDefault();
-    if (!user.isAuthenticated) {
+    if (!user) {
       toast.error("Please login first");
     } else {
       console.log(user._id);
@@ -102,7 +108,7 @@ const Header = () => {
               My cart
             </p>
           </NavLink>
-          {user.isAuthenticated && (
+          {user && (
             <NavLink
               className="group mr-[30px] flex flex-col items-center justify-center gap-1"
               to="/profile"
@@ -114,7 +120,7 @@ const Header = () => {
             </NavLink>
           )}
 
-          {!user.isAuthenticated && (
+          {!user && (
             <>
               <NavLink
                 className="group flex items-center justify-center"
@@ -135,7 +141,7 @@ const Header = () => {
               </NavLink>
             </>
           )}
-          {user.isAuthenticated && (
+          {user && (
             <NavLink
               className="group mr-[18px] flex flex-col items-center justify-center gap-1"
               onClick={handleLogOut}
