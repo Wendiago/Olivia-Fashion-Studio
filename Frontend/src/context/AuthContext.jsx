@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import authApi from "../api/authApi";
 import { resetCart } from "../store/CartSlice/CartSlice";
 import { useDispatch } from "react-redux";
@@ -8,123 +8,99 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const [user, setUser] = useState(null);
 
-  // // Load user from token on app startup
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     const token = localStorage.getItem("token");
-  //     if (token) {
-  //       try {
-  //         // Validate token or fetch user info using token
-  //         const response = await authApi.getInfo();
-  //         setUser(response.data);
-  //       } catch (error) {
-  //         console.error("Failed to fetch user info", error);
-  //         localStorage.removeItem("token"); // Clear invalid token
-  //         setUser(null);
-  //       }
-  //     }
-  //   };
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  //   fetchUser();
-  // }, []);
-
-  // Fetch the authenticated user's information
-  const {
-    data: user,
-    isLoading,
-    refetch,
-  } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: async () => {
-      const token = localStorage.getItem("token"); // Check for token
-      if (!token) {
-        return null; // If no token, return null
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await authApi.getInfo();
+          //console.log("fetch user auth context: ", response);
+          const user = response.data.data;
+          setUser(user);
+          navigate(user.isAdmin ? "/admin" : "/");
+        } catch (error) {
+          console.error("Failed to fetch user info", error);
+          localStorage.removeItem("token");
+          setUser(null);
+          navigate("/login");
+        }
+      } else {
+        navigate("/");
       }
-      try {
-        const response = await authApi.getInfo();
-        //console.log(response.data);
-        return response.data.data;
-      } catch (error) {
-        console.error("Failed to fetch user info", error);
-        localStorage.removeItem("token"); // Clear invalid token
-        return null;
-      }
-    },
-    enabled: !!localStorage.getItem("token"), // Enable query only if token exists
-    retry: false,
-    staleTime: Infinity,
-    onError: () => {
-      queryClient.setQueryData(["authUser"], null); // Reset user data on error
-    },
-  });
+      setIsLoading(false);
+    };
 
-  // Register Mutation
-  const registerMutation = useMutation({
-    mutationFn: async ({ username, email, password, fullname }) => {
+    fetchUser();
+  }, []);
+
+  const login = async ({ username, password }) => {
+    try {
+      const response = await authApi.login({ username, password });
+      //console.log(response);
+      const token = response.data.data.accessToken;
+      localStorage.setItem("token", token);
+      const userInfo = response.data.data;
+      setUser(userInfo);
+      navigate(userInfo.isAdmin ? "/admin" : "/");
+      return response;
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await authApi.logout();
+      localStorage.removeItem("token");
+      setUser(null);
+      dispatch(resetCart());
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+
+  const update = async (updatedData) => {
+    try {
+      const response = await authApi.updateUser(updatedData);
+      setUser(response.data.data);
+    } catch (error) {
+      console.error("Update failed", error);
+    }
+  };
+
+  const register = async ({ username, email, password, fullname }) => {
+    try {
       const response = await authApi.register({
         username,
-        password,
         email,
+        password,
         fullname,
       });
-      return response.data;
-    },
-  });
-
-  // Login Mutation
-  const loginMutation = useMutation({
-    mutationFn: async ({ username, password }) => {
-      const response = await authApi.login({ username, password });
-      return response.data;
-    },
-    onSuccess: (response) => {
-      const user = response.data;
-      const token = user.accessToken;
-      console.log(user);
-      queryClient.setQueryData(["authUser"], user);
-      localStorage.setItem("token", token);
-    },
-  });
-
-  // Logout Mutation
-  const logoutMutation = useMutation({
-    mutationFn: async () => {
-      await authApi.logout();
-    },
-    onSuccess: () => {
-      queryClient.setQueryData(["authUser"], null); // Clear user data on logout
-      localStorage.removeItem("token");
-      dispatch(resetCart());
-    },
-  });
-
-  // Update Mutation
-  const updateMutation = useMutation({
-    mutationFn: async (updatedData) => {
-      const response = await authApi.updateUser(updatedData);
-      return response.data.data;
-    },
-    onSuccess: (updatedUser) => {
-      queryClient.setQueryData(["authUser"], updatedUser);
-    },
-  });
+      // Optionally handle post-registration actions
+    } catch (error) {
+      console.error("Registration failed", error);
+    }
+  };
 
   return (
     <AuthContext.Provider
       value={{
         user,
         isLoading,
-        login: loginMutation.mutate,
-        logout: logoutMutation.mutate,
-        update: updateMutation.mutate,
-        register: registerMutation.mutate,
+        login,
+        logout,
+        update,
+        register,
       }}
     >
-      {children}
+      {!isLoading && children}
     </AuthContext.Provider>
   );
 };

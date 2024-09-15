@@ -1,15 +1,5 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
-import {
-  getAllCategory,
-  getAllCategoryStatus,
-  addAsyncCategory,
-  fetchAsyncCategories,
-  deleteAsyncCategory,
-  updateAsyncCategory,
-} from "../../../store/CategorySlice/CategorySlice";
-import { STATUS } from "../../../utils/status";
 import {
   Table,
   TableBody,
@@ -34,10 +24,13 @@ import { Delete, Edit } from "../../../assets/icons";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAllCategories } from "../../../hooks/useAllCategories";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import categoryApi from "../../../api/categoryApi";
 
 const AdminCategories = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -48,16 +41,51 @@ const AdminCategories = () => {
     banner: "",
   });
 
+  // Fetch categories
   const {
     data: categoryList = {},
-    isLoading: isCategoriesLoading,
-    error: categoriesError,
+    isLoading,
+    error,
+    refetch,
   } = useAllCategories();
   const { data: categories = [] } = categoryList;
 
-  if (isCategoriesLoading) {
-    return <Loading />;
-  }
+  // Add category mutation
+  const addMutation = useMutation({
+    mutationFn: (newCategory) => categoryApi.addCategory(newCategory),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["all-category"]); // Refetch categories
+      toast.success("Add successfully", { autoClose: 2000, theme: "colored" });
+      setAddDialogOpen(false);
+      setNewCategory({ category: "", banner: "" });
+    },
+  });
+
+  // Delete category mutation
+  const deleteMutation = useMutation({
+    mutationFn: (categoryIdToDelete) =>
+      categoryApi.deleteCategory(categoryIdToDelete),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["all-category"]); // Refetch categories
+      toast.success("Delete successfully", {
+        autoClose: 2000,
+        theme: "colored",
+      });
+      setDeleteDialogOpen(false);
+      setCategoryIdToDelete(null);
+    },
+  });
+
+  // Update category mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => categoryApi.updateCategory(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["all-category"]); // Refetch categories
+      toast.success("Edit successfully", { autoClose: 2000, theme: "colored" });
+      setEditDialogOpen(false);
+      setCategoryToEdit(null);
+    },
+  });
 
   const handleChangeCategory = (e, id) => {
     e.preventDefault();
@@ -70,6 +98,7 @@ const AdminCategories = () => {
   };
 
   const handleEdit = (category) => {
+    console.log(category);
     setCategoryToEdit(category);
     setEditDialogOpen(true);
   };
@@ -79,103 +108,39 @@ const AdminCategories = () => {
   };
 
   const handleConfirmDelete = () => {
-    toast.success("Delete successfully", {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-    });
-
-    // After deleting, close the dialog
-    dispatch(deleteAsyncCategory(categoryIdToDelete)).then(() =>
-      dispatch(fetchAsyncCategories())
-    );
-    setDeleteDialogOpen(false);
-    setCategoryIdToDelete(null);
+    deleteMutation.mutate(categoryIdToDelete);
   };
 
   const handleCancelDelete = () => {
-    // If the user cancels, close the dialog
     setDeleteDialogOpen(false);
     setCategoryIdToDelete(null);
   };
 
   const handleConfirmEdit = () => {
-    dispatch(
-      updateAsyncCategory({
-        categoryId: categoryToEdit._id,
-        data: categoryToEdit,
-      })
-    ).then(() => dispatch(fetchAsyncCategories()));
-
-    toast.success("Edit successfully", {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-    });
-
-    // After editing, close the dialog
-    setEditDialogOpen(false);
-    setCategoryToEdit(null);
+    if (!categoryToEdit || !categoryToEdit._id) return;
+    console.log("Cat to edit: ", categoryToEdit);
+    updateMutation.mutate({ id: categoryToEdit._id, data: categoryToEdit });
   };
 
   const handleCancelEdit = () => {
-    // If the user cancels, close the dialog
     setEditDialogOpen(false);
     setCategoryToEdit(null);
   };
 
   const handleConfirmAdd = () => {
-    if (newCategory.category == "" || newCategory.banner == "") {
+    if (newCategory.category === "" || newCategory.banner === "") {
       toast.error("You cannot leave the input blank", {
-        position: "top-right",
         autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
         theme: "colored",
       });
     } else {
-      toast.success("Add successfully", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-
-      dispatch(addAsyncCategory(newCategory)).then(() =>
-        dispatch(fetchAsyncCategories())
-      );
-      setAddDialogOpen(false);
-      setNewCategory({
-        category: "",
-        banner: "",
-      });
+      addMutation.mutate(newCategory);
     }
   };
 
   const handleCancelAdd = () => {
-    // If the user cancels, close the dialog
     setAddDialogOpen(false);
-    setNewCategory({
-      category: "",
-      banner: "",
-    });
+    setNewCategory({ category: "", banner: "" });
   };
 
   const handleBannerInputChange = (event, dialogType) => {
@@ -184,7 +149,6 @@ const AdminCategories = () => {
     if (bannerFile) {
       const reader = new FileReader();
       reader.onload = () => {
-        // Update the banner image preview based on the dialog type
         if (dialogType === "edit") {
           setCategoryToEdit((prevCategory) => ({
             ...prevCategory,
@@ -200,6 +164,10 @@ const AdminCategories = () => {
       reader.readAsDataURL(bannerFile);
     }
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex flex-col bg-grey-100 items-center gap-y-[30px] pb-[50px]">

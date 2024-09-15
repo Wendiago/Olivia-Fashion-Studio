@@ -11,7 +11,6 @@ const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^.{8,24}$/;
 
 const Login = () => {
-  const navigate = useNavigate();
   const { login, user } = useAuth();
   const userRef = useRef();
 
@@ -35,40 +34,23 @@ const Login = () => {
     setValidPwd(PWD_REGEX.test(pwd));
   }, [pwd]);
 
-  // Effect to redirect if already authenticated
-  useEffect(() => {
-    if (user) {
-      if (user.isAdmin) {
-        navigate("/admin/");
-      } else {
-        navigate(`/`);
-      }
-    }
-  }, [user, navigate]);
-
   const handleSubmit = async () => {
     if (!validName || !validPwd) {
       setErrMsg("Invalid input. Try again");
     } else {
       setErrMsg("");
 
-      login(
-        { username, password: pwd },
-        {
-          onSuccess: (data) => {
-            toast.success("Login successful");
-            if (data.isAdmin) {
-              navigate("/admin/");
-            } else {
-              navigate(`/`);
-            }
-          },
-          onError: (error) => {
-            toast.error(error?.response?.data?.message || "Login failed");
-            setErrMsg(error?.response?.data?.message || "Login failed");
-          },
+      try {
+        const response = await login({ username: username, password: pwd });
+        if (response?.status != 200) {
+          toast.error(response?.data?.message || "Login failed");
+        } else {
+          toast.success("Login successful");
         }
-      );
+      } catch {
+        toast.error(error?.response?.data?.message || "Login failed");
+        setErrMsg(error?.response?.data?.message || "Login failed");
+      }
     }
   };
 

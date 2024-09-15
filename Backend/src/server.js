@@ -35,7 +35,6 @@ app.use(
     origin: [
       "https://olivia-fashion-studio-frontend.onrender.com",
       "http://localhost:5174",
-      "https://oliviafashion.netlify.app",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,

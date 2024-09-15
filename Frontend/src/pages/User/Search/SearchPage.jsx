@@ -9,15 +9,14 @@ import { formatPrice } from "../../../utils/helpers";
 import Dropdown from "react-select";
 import ReactPaginate from "react-paginate";
 import "./SearchPage.css";
-import { getAllCategory } from "../../../store/CategorySlice/CategorySlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Loading } from "../../../components";
 import ProductApi from "../../../api/productApi";
+import { useAllCategories } from "../../../hooks/useAllCategories";
 
 const SearchPage = () => {
   const navigate = useNavigate();
   const { categoryId } = useParams();
-  const categoryList = useSelector(getAllCategory);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(null);
   const [products, setProducts] = useState(null);
@@ -28,6 +27,13 @@ const SearchPage = () => {
   const maxPrice = searchParams.get("maxPrice");
   const order = searchParams.get("order");
   const search = searchParams.get("search");
+
+  const {
+    data: categoryList = {},
+    isLoading: isCategoriesLoading,
+    error: categoriesError,
+  } = useAllCategories();
+  const { data: categories = [] } = categoryList;
 
   //Get product list based on category
   useEffect(() => {
@@ -154,7 +160,7 @@ const SearchPage = () => {
             <p className="pt-[12px] pb-[12px] font-body text-dark font-[600]">
               Category
             </p>
-            {categoryList.map((category, index) => (
+            {categories.map((category, index) => (
               <NavLink
                 key={index}
                 onClick={(e) => handleChangeCategory(e, category?._id)}

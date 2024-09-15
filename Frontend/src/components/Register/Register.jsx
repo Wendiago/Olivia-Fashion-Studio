@@ -63,15 +63,13 @@ const Register = () => {
         fullname: "default",
       };
 
-      register(dataToSend, {
-        onSuccess: () => {
-          navigate("/login");
-        },
-        onError: () => {
-          toast.error(response.data.message);
-          setErrMsg(`${response.data.message}`);
-        },
-      });
+      try {
+        await register(dataToSend);
+        toast.success("Register successfully");
+      } catch {
+        toast.error(response.data.message);
+        setErrMsg(`${response.data.message}`);
+      }
     }
   };
 

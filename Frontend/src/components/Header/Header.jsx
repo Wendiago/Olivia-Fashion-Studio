@@ -35,7 +35,6 @@ const Header = () => {
     try {
       await logout();
       toast.success("Log out successful");
-      navigate("/");
     } catch {
       toast.error(response.data.message);
     }

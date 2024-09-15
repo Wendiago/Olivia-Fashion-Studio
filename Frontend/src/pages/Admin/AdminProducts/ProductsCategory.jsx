@@ -9,10 +9,7 @@ import { formatPrice } from "../../../utils/helpers";
 import Dropdown from "react-select";
 import ReactPaginate from "react-paginate";
 import "./ProductsPage.css";
-import {
-  getAllCategory,
-  fetchAsyncCategories,
-} from "../../../store/CategorySlice/CategorySlice";
+import { useAllCategories } from "../../../hooks/useAllCategories";
 import {
   addAsyncProduct,
   updateAsyncProduct,
@@ -52,7 +49,6 @@ const ProductsPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { categoryId } = useParams();
-  const categoryList = useSelector(getAllCategory);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(null);
   const [products, setProducts] = useState(null);
@@ -78,9 +74,13 @@ const ProductsPage = () => {
   const maxPrice = searchParams.get("maxPrice");
   const order = searchParams.get("order");
 
-  useEffect(() => {
-    dispatch(fetchAsyncCategories());
-  }, []);
+  const {
+    data: categoryList = {},
+    isLoading,
+    error,
+    refetch,
+  } = useAllCategories();
+  const { data: categories = [] } = categoryList;
 
   //Get product list based on category
   useEffect(() => {
@@ -379,7 +379,7 @@ const ProductsPage = () => {
             <p className="pt-[12px] pb-[12px] font-body text-dark font-[600]">
               Category
             </p>
-            {categoryList.map((category, index) => (
+            {categories.map((category, index) => (
               <NavLink
                 key={index}
                 onClick={(e) => handleChangeCategory(e, category?._id)}
@@ -518,7 +518,7 @@ const ProductsPage = () => {
                     <TableCell>{product._id.slice(-6)}</TableCell>
                     <TableCell>{product.name}</TableCell>
                     <TableCell>
-                      {getCategoryForProduct(product.id_category, categoryList)}
+                      {getCategoryForProduct(product.id_category, categories)}
                     </TableCell>
                     <TableCell>
                       <img
@@ -623,7 +623,7 @@ const ProductsPage = () => {
                     }))
                   }
                 >
-                  {categoryList.map((category) => (
+                  {categories.map((category) => (
                     <MenuItem key={category._id} value={category._id}>
                       {category.category}
                     </MenuItem>
@@ -719,7 +719,7 @@ const ProductsPage = () => {
                     }))
                   }
                 >
-                  {categoryList.map((category) => (
+                  {categories.map((category) => (
                     <MenuItem key={category._id} value={category._id}>
                       {category.category}
                     </MenuItem>

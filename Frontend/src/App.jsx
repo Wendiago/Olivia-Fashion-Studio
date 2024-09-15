@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
 import {
   Homepage,
@@ -33,18 +33,22 @@ import store from "./store/store";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   return (
-    <Provider store={store}>
-      <AuthProvider>
-        <UserContextProvider>
-          <BrowserRouter>
+    <BrowserRouter>
+      <Provider store={store}>
+        <AuthProvider>
+          <UserContextProvider>
             <Routes>
+              {/* Public Routes */}
               <Route path="/login-success/:userId" element={<LoginSuccess />} />
               <Route path="/login" element={<Form type="login" />} />
               <Route path="/register" element={<Form type="register" />} />
-              <Route element={<Container></Container>}>
+
+              {/* Customer Routes */}
+              <Route element={<Container />}>
                 <Route path="/" element={<Homepage />} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route
@@ -54,34 +58,52 @@ function App() {
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/payment" element={<Payment />} />
-                <Route element={<Profile></Profile>}>
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/order" element={<OrderInfo />} />
-                  <Route
-                    path="/transactions"
-                    element={<TransactionHistory />}
-                  />
-                  <Route path="/topup" element={<Topup />} />
+
+                {/* Protected Routes for Customer Profile */}
+                <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
+                  <Route element={<Profile />}>
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/order" element={<OrderInfo />} />
+                    <Route
+                      path="/transactions"
+                      element={<TransactionHistory />}
+                    />
+                    <Route path="/topup" element={<Topup />} />
+                  </Route>
                 </Route>
               </Route>
 
-              <Route element={<AdminContainer></AdminContainer>}>
-                <Route path="/admin/" element={<AdminHome />} />
-                <Route path="/admin/orders" element={<AdminOrders />} />
-                <Route path="/admin/categories" element={<AdminCategories />} />
-                <Route path="/admin/products" element={<AdminProductPage />} />
-                <Route path="/admin/users" element={<AdminManagement />} />
-                <Route
-                  path="admin/category/:categoryId"
-                  element={<AdminProductCategory />}
-                />
-                <Route path="/admin/search" element={<AdminSearch />} />
-                <Route
-                  path="/admin/transaction"
-                  element={<AdminTransaction />}
-                />
+              {/* Admin Routes */}
+              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                <Route element={<AdminContainer />}>
+                  <Route path="/admin/" element={<AdminHome />} />
+                  <Route path="/admin/orders" element={<AdminOrders />} />
+                  <Route
+                    path="/admin/categories"
+                    element={<AdminCategories />}
+                  />
+                  <Route
+                    path="/admin/products"
+                    element={<AdminProductPage />}
+                  />
+                  <Route path="/admin/users" element={<AdminManagement />} />
+                  <Route
+                    path="admin/category/:categoryId"
+                    element={<AdminProductCategory />}
+                  />
+                  <Route path="/admin/search" element={<AdminSearch />} />
+                  <Route
+                    path="/admin/transaction"
+                    element={<AdminTransaction />}
+                  />
+                </Route>
               </Route>
+
+              {/* Redirect for undefined routes */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+
+            {/* Toast Container for Notifications */}
             <div>
               <ToastContainer
                 position="bottom-right"
@@ -96,10 +118,10 @@ function App() {
                 theme="colored"
               />
             </div>
-          </BrowserRouter>
-        </UserContextProvider>
-      </AuthProvider>
-    </Provider>
+          </UserContextProvider>
+        </AuthProvider>
+      </Provider>
+    </BrowserRouter>
   );
 }
 

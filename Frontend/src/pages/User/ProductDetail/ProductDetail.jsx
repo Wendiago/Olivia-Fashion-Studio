@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { addToCart } from "../../../store/CartSlice/CartSlice";
 import { useAuth } from "../../../context/AuthContext";
 import { toast } from "react-toastify";
+import { useAllCategories } from "../../../hooks/useAllCategories";
 
 const StyledRating = styled(Rating)({
   "& .MuiRating-iconFilled": {
@@ -28,6 +29,8 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState(null);
+  const { data: categoryList = {} } = useAllCategories();
+  const { data: categories = [] } = categoryList;
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -49,6 +52,7 @@ const ProductDetail = () => {
     }
   }, [zoomImage]);
 
+  //console.log(product);
   const handlePriceRender = () => {
     if (product && product?.discountPercentage) {
       if (product.discountPercentage > 0) {
@@ -108,6 +112,11 @@ const ProductDetail = () => {
   const handleBuyNow = () => {
     if (product?.quantity > 0) {
     }
+  };
+
+  const findCategoryBasedOnId = (id) => {
+    const categoryInfo = categories.find((category) => category._id == id);
+    return categoryInfo.category;
   };
   return (
     product &&
@@ -198,7 +207,10 @@ const ProductDetail = () => {
                 </div>
                 <div className="category grid grid-cols-[3fr_9fr]">
                   <div className="font-body text-grey-500">Category: </div>
-                  <div>{product?.category ?? "No category"}</div>
+                  <div>
+                    {findCategoryBasedOnId(product.id_category) ??
+                      "No category"}
+                  </div>
                 </div>
                 <div className="warranty grid grid-cols-[3fr_9fr]">
                   <div className="font-body text-grey-500">Brand: </div>

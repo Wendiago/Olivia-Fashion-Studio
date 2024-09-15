@@ -1,7 +1,6 @@
 import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 import { DefaultAvatar } from "../../assets/imgs";
-import AuthApi from "../../api/authApi";
 import { toast } from "react-toastify";
 
 const ProfilePage = () => {
@@ -9,17 +8,12 @@ const ProfilePage = () => {
   const [fullname, setFullname] = useState(user?.fullname || user?.username);
   const handleUpdateUserInfo = async () => {
     if (user && fullname !== null && fullname !== "") {
-      update(
-        { fullname: fullname },
-        {
-          onSucess: () => {
-            toast.success("Update successfully");
-          },
-          onError: () => {
-            toast.error("Update failed");
-          },
-        }
-      );
+      try {
+        await update({ fullname: fullname });
+        toast.success("Update successfully");
+      } catch {
+        toast.error("Update failed");
+      }
     }
   };
   return (

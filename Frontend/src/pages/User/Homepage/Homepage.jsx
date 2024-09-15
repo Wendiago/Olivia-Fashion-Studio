@@ -4,10 +4,10 @@ import Carousel from "react-material-ui-carousel";
 import MultiCarousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { Bolt } from "@mui/icons-material";
-import { ProductCard, Loading } from "../../../components";
+import { ProductCard } from "../../../components";
 import { useAllCategories } from "../../../hooks/useAllCategories";
 import { useAllProducts } from "../../../hooks/useAllProducts";
-import { placeholder } from "../../../assets/imgs";
+import { InternalLoading } from "../../../components/Loading/InternalLoading";
 
 const Homepage = () => {
   const [activeItemIndex, setActiveItemIndex] = useState(0);
@@ -72,10 +72,10 @@ const Homepage = () => {
             interval={5000}
             index={activeItemIndex}
             onChange={(index) => setActiveItemIndex(index)}
-            className="w-full h-full"
+            height="520px"
           >
             {isCategoriesLoading ? (
-              <img className="cursor-pointer " src={placeholder}></img>
+              <InternalLoading />
             ) : (
               categories.map((category, index) => (
                 <img
@@ -100,9 +100,13 @@ const Homepage = () => {
           <p>TODAY SPECIAL OFFERS</p>
         </div>
         <MultiCarousel responsive={responsive} itemClass="p-3">
-          {products.map((product, index) => (
-            <ProductCard key={index} product={product} />
-          ))}
+          {isProductsLoading ? (
+            <InternalLoading />
+          ) : (
+            products.map((product, index) => (
+              <ProductCard key={index} product={product} />
+            ))
+          )}
         </MultiCarousel>
       </div>
 
@@ -112,9 +116,13 @@ const Homepage = () => {
           <p>Top products</p>
         </div>
         <MultiCarousel responsive={responsive} itemClass="p-3">
-          {products.map((product, index) => (
-            <ProductCard key={index} product={product} />
-          ))}
+          {isProductsLoading ? (
+            <InternalLoading />
+          ) : (
+            products.map((product, index) => (
+              <ProductCard key={index} product={product} />
+            ))
+          )}
         </MultiCarousel>
       </div>
     </div>

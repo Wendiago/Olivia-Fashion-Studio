@@ -25,7 +25,7 @@ class CategoryApi {
   }
 
   async deleteCategory(categoryId) {
-    const response = await customAxios.get(
+    const response = await customAxios.delete(
       `admin/category/delete/${categoryId}`
     );
     return response.data;
