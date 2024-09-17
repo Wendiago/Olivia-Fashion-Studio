@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }) => {
         password,
         fullname,
       });
-      // Optionally handle post-registration actions
+      return response.data;
     } catch (error) {
       console.error("Registration failed", error);
     }

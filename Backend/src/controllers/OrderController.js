@@ -5,14 +5,19 @@ const jwt = require("jsonwebtoken");
 const orderController = {
   createOrder: async (req, res) => {
     try {
-      const token = req.headers.token;
+      //console.log(req);
+      const token = req.headers.authorization;
+      //console.log(token);
       const accessToken = token.split(" ")[1];
       const decodedToken = jwt.decode(accessToken);
 
+      console.log(req.body);
+      console.log(decodedToken);
       const newOrder = await Order.create({
         ...req.body,
         user: decodedToken.id,
       });
+      console.log("create successfully", newOrder);
 
       const orderItems = newOrder.items;
       orderItems.forEach(async (item) => {

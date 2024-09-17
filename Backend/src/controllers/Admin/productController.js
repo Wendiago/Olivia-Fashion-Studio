@@ -13,7 +13,8 @@ const productController = {
         });
       }
 
-      const uploadImage = cloudinary.uploader.upload(req.body.image, {
+      console.log(req.body.image);
+      const uploadImage = await cloudinary.uploader.upload(req.body.image, {
         folder: "product_image",
       });
 
@@ -21,7 +22,7 @@ const productController = {
         name: req.body.name,
         id_category: req.body.id_category,
         price: req.body.price,
-        image: uploadImage,
+        image: uploadImage.secure_url,
         description: req.body.description,
         quantity: req.body.quantity,
       });
@@ -44,7 +45,7 @@ const productController = {
 
   updateProduct: async (req, res) => {
     try {
-      const uploadImage = cloudinary.uploader.upload(req.body.image, {
+      const uploadImage = await cloudinary.uploader.upload(req.body.image, {
         folder: "product_image",
       });
 
@@ -52,7 +53,7 @@ const productController = {
         name: req.body.name,
         id_category: req.body.id_category,
         price: req.body.price,
-        image: uploadImage,
+        image: uploadImage.secure_url,
         description: req.body.description,
         quantity: req.body.quantity,
       };

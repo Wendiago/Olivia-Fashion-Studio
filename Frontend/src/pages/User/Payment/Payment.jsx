@@ -115,6 +115,7 @@ const Cart = () => {
           transformArray(currentCart),
           total_price
         );
+        console.log(createOrder);
 
         if (createOrder.data.success === true) {
           dispatch(deleteCart());
@@ -215,7 +216,7 @@ const Cart = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 fullWidth
-                style={{ marginBottom: "20px", marginTop: '30px' }}
+                style={{ marginBottom: "20px", marginTop: "30px" }}
               />
 
               <TextField

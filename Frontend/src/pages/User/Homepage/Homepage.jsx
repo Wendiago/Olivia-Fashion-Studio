@@ -66,18 +66,18 @@ const Homepage = () => {
           ))}
         </ul>
         <div className="ads flex-1">
-          <Carousel
-            // navButtonsAlwaysVisible={true}
-            swipe={false}
-            interval={5000}
-            index={activeItemIndex}
-            onChange={(index) => setActiveItemIndex(index)}
-            height="520px"
-          >
-            {isCategoriesLoading ? (
-              <InternalLoading />
-            ) : (
-              categories.map((category, index) => (
+          {isCategoriesLoading ? (
+            <InternalLoading />
+          ) : (
+            <Carousel
+              // navButtonsAlwaysVisible={true}
+              swipe={false}
+              interval={5000}
+              index={activeItemIndex}
+              onChange={(index) => setActiveItemIndex(index)}
+              //height="520px"
+            >
+              {categories.map((category, index) => (
                 <img
                   className="cursor-pointer"
                   loading="lazy"
@@ -87,10 +87,9 @@ const Homepage = () => {
                     navigate(`/product/category/${category._id}`);
                   }}
                 ></img>
-              ))
-            )}
-            {}
-          </Carousel>
+              ))}
+            </Carousel>
+          )}
         </div>
       </div>
 

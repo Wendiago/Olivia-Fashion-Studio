@@ -2,7 +2,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons";
-import AuthApi from "../../api/authApi";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
@@ -10,7 +9,7 @@ const PWD_REGEX = /^.{8,24}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
 const Register = () => {
-  const { register } = useAuth;
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const userRef = useRef();
@@ -64,11 +63,13 @@ const Register = () => {
       };
 
       try {
-        await register(dataToSend);
+        const response = await register(dataToSend);
+        console.log(response);
         toast.success("Register successfully");
-      } catch {
-        toast.error(response.data.message);
-        setErrMsg(`${response.data.message}`);
+        navigate("/login");
+      } catch (error) {
+        toast.error(error.message);
+        setErrMsg(`${error.message}`);
       }
     }
   };

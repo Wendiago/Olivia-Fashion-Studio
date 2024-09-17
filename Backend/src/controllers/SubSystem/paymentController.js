@@ -1,12 +1,11 @@
 const Account = require("../../models/Account");
 const Transaction = require("../../models/Transaction");
 const jwt = require("jsonwebtoken");
-const middlewareController = require('../middlewareController')
+const middlewareController = require("../middlewareController");
 const nodeMailer = require("../../utils/nodeMailer");
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 const paymentController = {
-
   createPaymentAccount: async (req, res) => {
     try {
       const { userId } = req.body;
@@ -14,7 +13,7 @@ const paymentController = {
       const savedAccount = await newAccount.save();
       res.status(201).json({
         success: true,
-        data: savedAccount
+        data: savedAccount,
       });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -35,8 +34,8 @@ const paymentController = {
   sendVerifyEmail: async (req, res) => {
     try {
       const { email1, id } = req.body;
-      const Code = crypto.randomBytes(3).toString('hex').toUpperCase();
-      console.log(Code);
+      const Code = crypto.randomBytes(3).toString("hex").toUpperCase();
+      //console.log(Code);
       // Send email
       const content = {
         email: email1,
@@ -44,8 +43,8 @@ const paymentController = {
 
         html: `<p>Mã thanh toán là:
                       <b>${Code}</b>
-                 </p>`
-      }
+                 </p>`,
+      };
 
       const account = await Account.findOne({ userId: id });
       account.code = Code;
@@ -55,13 +54,13 @@ const paymentController = {
       return res.status(200).json({
         success: true,
         message: "Please check your email !",
-        data: content
+        data: content,
       });
     } catch (error) {
       return res.status(500).json({
         success: false,
         message: error,
-        data: {}
+        data: {},
       });
     }
   },
@@ -69,9 +68,9 @@ const paymentController = {
   verifyCodeEmail: async (req, res) => {
     try {
       const { code, id } = req.body;
-      console.log(code);
+      //console.log(code);
       const account = await Account.findOne({ userId: id });
-      console.log(account.code);
+      //console.log(account.code);
       if (code !== account.code) {
         return res.json({
           success: false,
@@ -86,24 +85,25 @@ const paymentController = {
       return res.status(500).json({
         success: false,
         message: error,
-        data: {}
+        data: {},
       });
     }
   },
 
   executePayment: async (req, res) => {
     const { amount, userId } = req.body;
-    console.log(userId);
+    //console.log(userId);
     const userAccount = await Account.findOne({ userId: userId });
 
-    const adminId = "65b33af5d0bae1a68e6d9ab5"
-    const adminAccount = await Account.findOne({userId: adminId});
+    const adminId = "66c4b7e1f6acf6e9413f58a0";
+    const adminAccount = await Account.findOne({ userId: adminId });
 
     try {
       if (!userAccount) {
         return res.json({
-          success: false, 
-          message: "User account not found" });
+          success: false,
+          message: "User account not found",
+        });
       }
 
       if (userAccount.balance < amount) {
@@ -114,10 +114,10 @@ const paymentController = {
           status: "FAILED",
         });
         await transaction.save();
-        
+
         return res.json({
-          success: false, 
-          message: "Insufficient balance" 
+          success: false,
+          message: "Insufficient balance",
         });
       }
 
@@ -126,7 +126,7 @@ const paymentController = {
 
       adminAccount.balance += amount;
       await adminAccount.save();
-      
+
       const transaction = new Transaction({
         accountId: userAccount.id,
         amount: amount,
@@ -135,12 +135,11 @@ const paymentController = {
       });
       await transaction.save();
 
-      res.status(200).json({ 
-          success: true,
-          message: "Payment executed successfully",
-          updatedAccount 
-        });
-
+      res.status(200).json({
+        success: true,
+        message: "Payment executed successfully",
+        updatedAccount,
+      });
     } catch (error) {
       const transaction = new Transaction({
         accountId: userAccount.id,
@@ -150,11 +149,10 @@ const paymentController = {
       });
       await transaction.save();
 
-      res.status(500)
-        .json({
-          success: false, 
-          message: "Internal Server Error"
-        });
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
     }
   },
 
@@ -164,22 +162,23 @@ const paymentController = {
       const userAccount = await Account.findOne({ userId: userId });
       if (!userAccount) {
         return res.json({
-          success: false, 
-          message: "User account not found" 
+          success: false,
+          message: "User account not found",
         });
       }
-    const transactions = await Transaction.find({ accountId: userAccount._id });
-    return res.status(200).json({
-      success: true, 
-      message: "Get transactions successfully", 
-      data: transactions 
-    });
-
+      const transactions = await Transaction.find({
+        accountId: userAccount._id,
+      });
+      return res.status(200).json({
+        success: true,
+        message: "Get transactions successfully",
+        data: transactions,
+      });
     } catch (error) {
       return res.status(500).json({
         success: false,
         message: error,
-        data: {}
+        data: {},
       });
     }
   },
@@ -187,13 +186,13 @@ const paymentController = {
   deposit: async (req, res) => {
     try {
       const { amount, id } = req.body;
-      const account = await Account.findOne({ userId:id });
+      const account = await Account.findOne({ userId: id });
 
       if (!account) {
         return res.json({
           success: false,
           message: "Account not found",
-          data: {}
+          data: {},
         });
       }
       account.balance += amount;
@@ -203,19 +202,18 @@ const paymentController = {
         accountId: account.id,
         amount: amount,
         type: "DEPOSIT",
-        status:"COMPLETED"
+        status: "COMPLETED",
       });
       const savedTransaction = await newTransaction.save();
-      res.status(200).json(
-        {
-          success: true,
-          message: "Deposit successfully",
-          data: savedTransaction
+      res.status(200).json({
+        success: true,
+        message: "Deposit successfully",
+        data: savedTransaction,
       });
     } catch (error) {
       res.status(500).json({
-        success: false, 
-        message: error.message 
+        success: false,
+        message: error.message,
       });
     }
   },
@@ -223,26 +221,25 @@ const paymentController = {
   getAmount: async (req, res) => {
     try {
       const { id } = req.body;
-      const account = await Account.findOne({ userId:id });
+      const account = await Account.findOne({ userId: id });
 
       if (!account) {
         return res.json({
           success: false,
           message: "Account not found",
-          data: {}
+          data: {},
         });
       }
 
-      res.status(200).json(
-        {
-          success: true,
-          message: "get Amount successfully",
-          data: account.balance
+      res.status(200).json({
+        success: true,
+        message: "get Amount successfully",
+        data: account.balance,
       });
     } catch (error) {
       res.status(500).json({
-        success: false, 
-        message: error.message 
+        success: false,
+        message: error.message,
       });
     }
   },
@@ -254,33 +251,32 @@ const paymentController = {
 
       //const transactions = await Transaction.find().skip(offset).limit(limit)
       const transactions = await Transaction.find()
-      .skip(offset)
-      .limit(limit)
-      .populate({
-        path: 'accountId',
-        model: 'Account',
-        select: 'userId', // select the fields you need
-      });
+        .skip(offset)
+        .limit(limit)
+        .populate({
+          path: "accountId",
+          model: "Account",
+          select: "userId", // select the fields you need
+        });
       const totalTransactions = await Transaction.countDocuments().exec();
       if (!transactions) {
         return res.json({
           success: false,
           message: "transactions not found",
-          data: {}
+          data: {},
         });
       }
 
-      res.status(200).json(
-        {
-          success: true,
-          message: "get Amount successfully",
-          data: transactions,
-          totalPages: Math.ceil(totalTransactions / limit),
+      res.status(200).json({
+        success: true,
+        message: "get Amount successfully",
+        data: transactions,
+        totalPages: Math.ceil(totalTransactions / limit),
       });
     } catch (error) {
       res.status(500).json({
-        success: false, 
-        message: error.message 
+        success: false,
+        message: error.message,
       });
     }
   },
